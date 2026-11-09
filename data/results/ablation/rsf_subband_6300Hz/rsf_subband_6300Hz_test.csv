@@ -1,0 +1,2 @@
+,average_epoch_loss,phoneme_loss,sharp_crest,phoneme_accuracy,mssc_sc_loss,mel_loss,mssc_mag_loss,sharp_contrast,sharp_temp_delta2,sharp_kurtosis,sharp_spec_sc,sharp_temp_delta,sharp_spec_mag,stft_sc,stft_mag
+0,24.670705914497375,0.3894171454012394,0.0,0.5814160786684364,0.0781409339979291,24.475997149944305,0.00011315083781937574,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
