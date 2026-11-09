@@ -1,0 +1,26 @@
+<div class="mx-8 custom-border-x pb-4 min-h-full h-full text-[#f2dfdf]">
+    <div class="custom-border-bottom p-4 flex flex-col">
+        <h2 class="text-2xl font-mono font-bold">Texts</h2>
+        <h4 class="text-xs font-mono text-[#e1b7b7]">Add texts to the SSI-Gatherer</h4>
+        <form class="mt-4 flex flex-col gap-2">
+            <textarea id="message" rows="4" [formControl]="textControl"
+                class="block p-2.5 w-full text-sm text-[#231d1d] bg-white rounded-lg focus:ring-[#ce9a65]"
+                placeholder="Lorem Ipsum..."></textarea>
+            <button type="button" (click)="submitText()"
+                class="w-full text-[#231d1d] bg-[#d79c98] hover:bg-[#c6726c] focus:ring-2 focus:outline-none focus:ring-[#ce9a65] font-medium rounded-lg text-sm px-4 py-2">Submit
+                Text</button>
+        </form>
+    </div>
+    <div class="custom-border-bottom p-4 flex flex-col">
+        <h2 class="text-2xl font-mono font-bold">Recordings</h2>
+        <h4 class="text-xs font-mono text-[#e1b7b7]">Here be a list of all Recordings</h4>
+        <div class="flex flex-col gap-2 pt-2">
+            @for (recording of backendService.text_distribution(); track $index) {
+                <div class="flex flex-row gap-8 justify-between">
+                    <span class="font-semibold text-lg">{{ recording[0] }}</span>
+                    <span class="font-semibold text-lg">{{ recording[1] }}</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,174 @@
+<div class="mx-8 custom-border-x pb-4 min-h-full h-full text-[#f2dfdf]">
+    <div class="custom-border-bottom p-4 flex flex-col">
+        <h2 class="text-2xl font-mono font-bold">Backend</h2>
+        <h4 class="text-xs font-mono text-[#e1b7b7]">Connect to the backend server of the SSI-Gatherer</h4>
+        <div class="flex flex-col gap-2 mt-4">
+            <form [formGroup]="formGroup">
+                <label for="url" class="mb-2 text-sm font-medium text-[#231d1d] sr-only">Search</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-[#231d1d]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                        </svg>
+                    </div>
+                    <input type="text" id="url" formControlName="url"
+                        class="block w-full p-4 ps-10 text-sm text-[#231d1d] rounded-lg bg-white focus:ring-[#ce9a65]"
+                        placeholder="https://ssi-gatherer.pb.ax" required />
+                    <button type="submit" (click)="checkConnection()"
+                        class="text-[#231d1d] absolute end-2.5 bottom-2.5 bg-[#d79c98] hover:bg-[#c6726c] focus:ring-4 focus:outline-none focus:ring-[#ce9a65] font-medium rounded-lg text-sm px-4 py-2">Connect</button>
+                </div>
+            </form>
+            <div class="flex flex-row items-center align-baseline text-sm gap-4">
+                <span>Connection Status:</span>
+                <div>
+                    <span class="rounded-full w-2 h-2 inline-flex mb-0.25"
+                        [ngClass]="{'bg-green-500': connectionStatus() === 'Connected', 'bg-red-500': connectionStatus() === 'Disconnected', 'bg-yellow-500': connectionStatus() === 'Unknown'}"></span>
+                    {{connectionStatus()}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="custom-border-bottom p-4 flex flex-col">
+        <h2 class="text-2xl font-mono font-bold">Device Information</h2>
+        <h4 class="text-xs font-mono text-[#e1b7b7]">Allow the SSI-Gatherer to access your media devices</h4>
+        <div class="flex flex-col gap-2 mt-4">
+            <button type="button" (click)="askForMicrophone()"
+                class="text-[#231d1d] bg-[#d79c98] hover:bg-[#c6726c] focus:ring-4 focus:outline-none focus:ring-[#ce9a65] font-medium rounded-lg text-sm px-4 py-2">Ask
+                for Microphone Permission</button>
+            <div class="flex flex-row items-center align-baseline text-sm gap-4">
+                <span>Device Status:</span>
+                <div>
+                    <span class="rounded-full w-2 h-2 inline-flex mb-0.25"
+                        [ngClass]="{'bg-green-500': permissionStatus() === 'granted', 'bg-red-500': permissionStatus() === 'denied', 'bg-yellow-500': permissionStatus() === 'prompt'}"></span>
+                    {{permissionStatus().toUpperCase()}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="custom-border-bottom p-4 flex flex-col">
+        <h2 class="text-2xl font-mono font-bold">Create a Recording</h2>
+        <h4 class="text-xs font-mono text-[#e1b7b7]">Record a voiced or unvoiced audio sample</h4>
+
+        <!-- Dynamic Carrier Gain Controls -->
+        <div class="flex flex-col gap-2 mt-4 p-3 rounded-lg bg-[#2a2222]">
+            <h3 class="text-lg font-mono font-semibold">Carrier Gain</h3>
+            <div class="flex flex-row gap-4 items-center">
+                <span class="text-sm text-[#e1b7b7]">Gain:</span>
+                <input type="range" min="0" max="5" step="0.1"
+                    [value]="recordingService.carrierGain()"
+                    (input)="setGain($event)"
+                    class="flex-1 accent-[#ce9a65]"
+                    [disabled]="recordingService.agcActive()" />
+                <span class="text-sm font-mono w-12 text-right">{{ recordingService.carrierGain().toFixed(1) }}x</span>
+            </div>
+            <div class="flex flex-row gap-4 items-center">
+                <button type="button" (click)="runAGC()" [disabled]="recordingService.agcActive()"
+                    class="text-[#231d1d] bg-[#a8c9a0] hover:bg-[#8ab880] focus:ring-2 focus:outline-none focus:ring-[#ce9a65] font-medium rounded-lg text-sm px-3 py-1">
+                    @if (recordingService.agcActive()) {
+                        Measuring...
+                    } @else {
+                        Auto Gain
+                    }
+                </button>
+                <span class="text-xs text-[#e1b7b7]">{{ recordingService.agcStatus() }}</span>
+            </div>
+            <div class="flex flex-row gap-4 items-center">
+                <span class="text-sm text-[#e1b7b7]">Carrier Level:</span>
+                <div class="flex-1 h-3 rounded-full bg-[#231d1d] overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-100"
+                        [style.width.%]="(recordingService.carrierLevel() * 100)"
+                        [ngClass]="{
+                            'bg-green-500': recordingService.carrierLevel() > 0.3,
+                            'bg-yellow-500': recordingService.carrierLevel() > 0.1 && recordingService.carrierLevel() <= 0.3,
+                            'bg-red-500': recordingService.carrierLevel() <= 0.1
+                        }">
+                    </div>
+                </div>
+                <span class="text-sm font-mono w-16 text-right">{{ (recordingService.carrierLevel() * 100).toFixed(0) }}%</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-2 mt-4">
+            <button type="button" (click)="createNewRecording()"
+                class="text-[#231d1d] bg-[#d79c98] hover:bg-[#c6726c] focus:ring-4 focus:outline-none focus:ring-[#ce9a65] font-medium rounded-lg text-sm px-4 py-2">Create
+                a new Recording</button>
+            @defer (when recordingService.currentRecording() !== null) {
+            <div class="text-[#e1b7b7]">Text for Recording - {{recordingService.currentRecording()!.uuid}}</div>
+            <div class="bg-white rounded-lg p-2">
+                <p class="font-sans text-base text-[#231d1d]">{{recordingService.currentRecording()!.text}}</p>
+            </div>
+            <div class="custom-border-bottom"></div>
+            <button type="button" (click)="recordVoiced()"
+                class="text-[#231d1d] bg-[#d79c98] hover:bg-[#c6726c] focus:ring-4 focus:outline-none focus:ring-[#ce9a65] font-medium rounded-lg text-sm px-4 py-2">
+                @if (voicedPressed) {
+                    Stop Voiced Recording
+                } @else {
+                    Record Voiced Audio
+                }
+            </button>
+            <div>
+                Voiced Audio Recording:
+                <span class="rounded-full w-2 h-2 inline-flex mb-0.25"
+                    [ngClass]="{'bg-green-500': recordingService.currentRecording()?.voiced !== undefined, 'bg-red-500': recordingService.currentRecording()?.voiced == undefined}"></span>
+            </div>
+            <button type="button" (click)="recordUnvoiced()"
+                class="text-[#231d1d] bg-[#d79c98] hover:bg-[#c6726c] focus:ring-4 focus:outline-none focus:ring-[#ce9a65] font-medium rounded-lg text-sm px-4 py-2">
+                @if (unvoicedPressed) {
+                    Stop Unvoiced Recording
+                } @else {
+                    Record Unvoiced Audio
+                }
+            </button>
+            <div>
+                Unvoiced Audio Recording:
+                <span class="rounded-full w-2 h-2 inline-flex mb-0.25"
+                    [ngClass]="{'bg-green-500': recordingService.currentRecording()?.unvoiced !== undefined, 'bg-red-500': recordingService.currentRecording()?.unvoiced == undefined}"></span>
+            </div>
+            <button type="button" (click)="saveRecording()"
+                class="text-[#231d1d] bg-[#d79c98] hover:bg-[#c6726c] focus:ring-4 focus:outline-none focus:ring-[#ce9a65] font-medium rounded-lg text-sm px-4 py-2">Save Recording</button>
+            } @placeholder {
+            <div role="status" class="space-y-2.5 animate-pulse max-w-lg">
+                <div class="flex items-center w-full">
+                    <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-32"></div>
+                    <div class="h-2.5 ms-2 bg-gray-300 rounded-full dark:bg-gray-600 w-24"></div>
+                    <div class="h-2.5 ms-2 bg-gray-300 rounded-full dark:bg-gray-600 w-full"></div>
+                </div>
+                <div class="flex items-center w-full max-w-[480px]">
+                    <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-full"></div>
+                    <div class="h-2.5 ms-2 bg-gray-300 rounded-full dark:bg-gray-600 w-full"></div>
+                    <div class="h-2.5 ms-2 bg-gray-300 rounded-full dark:bg-gray-600 w-24"></div>
+                </div>
+                <div class="flex items-center w-full max-w-[400px]">
+                    <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-full"></div>
+                    <div class="h-2.5 ms-2 bg-gray-200 rounded-full dark:bg-gray-700 w-80"></div>
+                    <div class="h-2.5 ms-2 bg-gray-300 rounded-full dark:bg-gray-600 w-full"></div>
+                </div>
+                <div class="flex items-center w-full max-w-[480px]">
+                    <div class="h-2.5 ms-2 bg-gray-200 rounded-full dark:bg-gray-700 w-full"></div>
+                    <div class="h-2.5 ms-2 bg-gray-300 rounded-full dark:bg-gray-600 w-full"></div>
+                    <div class="h-2.5 ms-2 bg-gray-300 rounded-full dark:bg-gray-600 w-24"></div>
+                </div>
+                <div class="flex items-center w-full max-w-[440px]">
+                    <div class="h-2.5 ms-2 bg-gray-300 rounded-full dark:bg-gray-600 w-32"></div>
+                    <div class="h-2.5 ms-2 bg-gray-300 rounded-full dark:bg-gray-600 w-24"></div>
+                    <div class="h-2.5 ms-2 bg-gray-200 rounded-full dark:bg-gray-700 w-full"></div>
+                </div>
+                <div class="flex items-center w-full max-w-[360px]">
+                    <div class="h-2.5 ms-2 bg-gray-300 rounded-full dark:bg-gray-600 w-full"></div>
+                    <div class="h-2.5 ms-2 bg-gray-200 rounded-full dark:bg-gray-700 w-80"></div>
+                    <div class="h-2.5 ms-2 bg-gray-300 rounded-full dark:bg-gray-600 w-full"></div>
+                </div>
+                <span class="sr-only">Loading...</span>
+            </div>
+            }
+
+        </div>
+    </div>
+    <!-- Create a Recording -->
+    <!-- Display Text -->
+    <!-- Record Voiced -->
+    <!-- Record Unvoiced -->
+    <!-- Save Recording -->
+</div>

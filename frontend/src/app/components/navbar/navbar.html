@@ -1,0 +1,18 @@
+<nav class="bg-[#231d1d] custom-border">
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <span
+                class="self-center font-sans text-3xl font-semibold whitespace-nowrap text-[#f2dfdf]">SSI-Gatherer</span>
+        </a>
+        <div class="flex flex-row flex-nowrap gap-6 md:gap-4 font-medium p-0 text-[#f2dfdf]">
+            <a href="/recording" class="flex flex-row items-center gap-1 rounded-lg">
+                <lucide-icon [img]="iconMic" [size]="32" [strokeWidth]="1" class="text-[#f2dfdf] block md:hidden lg:hidden"></lucide-icon>
+                <span class="hidden md:block text-[#f2dfdf] hover:text-[#ce9a65]">New Recording</span>
+            </a>    
+            <a href="/overview" class="flex flex-row items-center gap-1">
+                <lucide-icon [img]="iconLibrary" [size]="32" [strokeWidth]="1" class="text-[#f2dfdf] block md:hidden"></lucide-icon>
+                <span class="hidden md:block text-[#f2dfdf] hover:text-[#ce9a65]">All Recordings</span>
+            </a>
+        </div>
+    </div>
+</nav>
