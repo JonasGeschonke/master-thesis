@@ -1,0 +1,10 @@
+jiwer
+tqdm
+mlflow
+numpy
+scipy
+gymnasium
+tslearn
+whisper
+torch
+torchaudio
